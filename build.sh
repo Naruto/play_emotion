@@ -2,7 +2,7 @@
 
 PROG=play_emotion
 CC=gcc
-DEPEND_LIBS="ecore ecore-evas emotion evas"
+DEPEND_LIBS="ecore ecore-evas ecore-input emotion evas"
 CFLAGS=
 LIBS=
 for i in ${DEPEND_LIBS} ;

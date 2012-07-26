@@ -8,6 +8,37 @@
 #define WINDOW_WIDTH 300 
 #define WINDOW_HEIGHT 200
 
+static Eina_Bool key_cb(void *data, int type, void *event) {
+  Evas_Object *video = (Evas_Object *)data;
+  Ecore_Event_Key *kev = (Ecore_Event_Key*)event;
+  const Evas_Map *const_m = evas_object_map_get(video);
+  Evas_Map *m = evas_map_dup(const_m);
+
+  static double dx = 0;
+  static double dy = 0;
+  static double dz = 0;
+
+  if(strcmp(kev->keyname, "Right") == 0) {
+    dx += 0.1;
+  } else if(strcmp(kev->keyname, "Left") == 0) {
+    dx -= 0.1;
+  } else if(strcmp(kev->keyname, "Up") == 0) {
+    dy += 0.1;
+  } else if(strcmp(kev->keyname, "Down") == 0) {
+    dy -= 0.1;
+  } else {
+      printf("name:%s\n", kev->keyname);
+      evas_map_free(m);
+      return EINA_FALSE;
+  }
+
+  printf("dx:%f dy:%f dz:%f\n", dx, dy, dz);
+  evas_map_util_3d_rotate(m, dx, dy, dz, 0, 0, 0);
+  evas_object_map_set(video, m);
+  evas_map_free(m);
+  return EINA_TRUE;
+}
+
 static void
 main_delete_request(Ecore_Evas *ee)
 {
@@ -68,9 +99,14 @@ int main(int argc, char** argv) {
 
   m = evas_map_new(4);
   evas_map_util_points_populate_from_object(m, video);
-  evas_map_util_rotate(m, 45, 0 + (WINDOW_WIDTH/2), 0 + (WINDOW_HEIGHT/2));
+  // 2d rotate
+  // evas_map_util_rotate(m, 90, 0 + (WINDOW_WIDTH/2), 0 + (WINDOW_HEIGHT/2));
+  // 3d rotate
+  //evas_map_util_3d_rotate(m, 10.0, 10.0, 0.0, 0, 0, 0);
   evas_object_map_set(video, m);
   evas_object_map_enable_set(video, EINA_TRUE);
+
+  ecore_event_handler_add(ECORE_EVENT_KEY_DOWN, key_cb, video);
 
   ecore_main_loop_begin();
 
